@@ -45,6 +45,7 @@ aws s3 cp frontend/dist/index.html "s3://$BUCKET/index.html" \
 aws s3 sync frontend/dist/ "s3://$BUCKET/" \
   --delete \
   --exclude "agents/*" \
+  --exclude "agents-manifest.json" \
   --exclude "index.html" \
   --cache-control "public, max-age=31536000, immutable"
 
