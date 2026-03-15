@@ -1,6 +1,6 @@
 #!/bin/bash
 # sync-agents.sh
-# Pushes your local ~/.claude/agents/ folder to S3 so the web app stays current.
+# Pushes your local ~/.claude/agents/ to S3 and rebuilds the metadata manifest.
 # Run this any time you add, remove, or update agents on your Mac.
 
 set -e
@@ -22,12 +22,15 @@ if [ -z "$BUCKET" ]; then
 fi
 
 echo "Syncing ~/.claude/agents/ → s3://$BUCKET/agents/"
-echo ""
 
 aws s3 sync ~/.claude/agents/ "s3://$BUCKET/agents/" \
   --delete \
-  --exclude "*.DS_Store" \
+  --exclude ".DS_Store" \
+  --exclude "*/.DS_Store" \
   --exclude ".git/*"
 
+echo "Rebuilding agent manifest..."
+node "$(dirname "$0")/scripts/build-manifest.js"
+
 echo ""
-echo "✓ Done! Your agents are updated in the web app."
+echo "✓ Done! Agents and manifest updated."

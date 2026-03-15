@@ -35,16 +35,18 @@ npm run build
 cd ..
 
 echo "Uploading to s3://$BUCKET/ ..."
-# Upload with correct content types; exclude the agents/ prefix
+
+# Upload index.html FIRST (no-cache) so it is never absent during the sync
+aws s3 cp frontend/dist/index.html "s3://$BUCKET/index.html" \
+  --cache-control "no-cache, no-store, must-revalidate"
+
+# Sync remaining assets; --exclude index.html so it isn't re-uploaded with wrong headers
+# --exclude "agents/*" prevents --delete from removing synced agent files
 aws s3 sync frontend/dist/ "s3://$BUCKET/" \
   --delete \
   --exclude "agents/*" \
-  --cache-control "public, max-age=31536000, immutable" \
-  --exclude "index.html"
-
-# index.html should never be cached
-aws s3 cp frontend/dist/index.html "s3://$BUCKET/index.html" \
-  --cache-control "no-cache, no-store, must-revalidate"
+  --exclude "index.html" \
+  --cache-control "public, max-age=31536000, immutable"
 
 echo "Invalidating CloudFront cache..."
 INVALIDATION_ID=$(aws cloudfront create-invalidation \

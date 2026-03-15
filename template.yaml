@@ -86,7 +86,6 @@ Resources:
   # ── CloudFront Distribution ─────────────────────────────────────────────────
   AppDistribution:
     Type: AWS::CloudFront::Distribution
-    DependsOn: AppBucketPolicy
     Properties:
       DistributionConfig:
         Enabled: true

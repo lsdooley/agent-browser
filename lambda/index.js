@@ -1,8 +1,7 @@
-const { S3Client, ListObjectsV2Command, GetObjectCommand } = require('@aws-sdk/client-s3');
+const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 const s3 = new S3Client({});
 const BUCKET = process.env.BUCKET_NAME;
-const AGENTS_PREFIX = 'agents/';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -10,56 +9,21 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Headers': 'Content-Type',
 };
 
-function formatName(filename, category) {
-  let name = filename.replace('.md', '');
-  if (name.startsWith(category + '-')) {
-    name = name.slice(category.length + 1);
-  }
-  return name
-    .split('-')
-    .map(w => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(' ');
-}
-
 function parseFrontmatter(content) {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return { meta: {}, body: content };
   const meta = {};
   for (const line of match[1].split('\n')) {
     const idx = line.indexOf(':');
-    if (idx > 0) {
-      meta[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
-    }
+    // .trim() on both key and value strips trailing \r from Windows line endings
+    if (idx > 0) meta[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
   }
   return { meta, body: content.slice(match[0].length).trim() };
 }
 
-function extractDescription(content) {
-  const lines = content.split('\n');
-  for (const line of lines) {
-    const t = line.trim();
-    // Skip headings, horizontal rules, table rows, code fences, empty lines
-    if (!t || t.startsWith('#') || t.startsWith('|') || t.startsWith('```') || t.startsWith('---') || t.startsWith('===')) continue;
-    // Strip leading markdown symbols (blockquote, bold markers, etc.)
-    const clean = t.replace(/^[>*_`~]+\s*/, '').trim();
-    if (clean.length > 30) return clean.slice(0, 220);
-  }
-  return '';
-}
-
-async function listAllObjects(prefix) {
-  const items = [];
-  let token;
-  do {
-    const res = await s3.send(new ListObjectsV2Command({
-      Bucket: BUCKET,
-      Prefix: prefix,
-      ContinuationToken: token,
-    }));
-    items.push(...(res.Contents || []));
-    token = res.NextContinuationToken;
-  } while (token);
-  return items;
+async function getS3Object(key) {
+  const res = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: key }));
+  return res.Body.transformToString('utf-8');
 }
 
 const json = (statusCode, body) => ({
@@ -77,35 +41,25 @@ exports.handler = async (event) => {
   }
 
   try {
-    // GET /api/agents — list all agents
+    // GET /api/agents — return full manifest
     if (path === '/api/agents') {
-      const objects = await listAllObjects(AGENTS_PREFIX);
-      const agents = objects
-        .filter(o => o.Key.endsWith('.md'))
-        .map(o => {
-          const rel = o.Key.slice(AGENTS_PREFIX.length); // e.g. "engineering/engineering-frontend-developer.md"
-          const parts = rel.split('/');
-          const category = parts.length > 1 ? parts[0] : 'general';
-          const filename = parts[parts.length - 1];
-          const name = formatName(filename, category);
-          return { key: rel, category, filename, name };
-        })
-        .sort((a, b) => a.category.localeCompare(b.category) || a.name.localeCompare(b.name));
-
-      return json(200, agents);
+      const raw = await getS3Object('agents-manifest.json');
+      const manifest = JSON.parse(raw);
+      return json(200, manifest);
     }
 
-    // GET /api/agents/{key} — get full agent content
+    // GET /api/agents/{key} — return full agent content
     if (path.startsWith('/api/agents/')) {
       const agentKey = decodeURIComponent(path.slice('/api/agents/'.length));
-      const s3Key = AGENTS_PREFIX + agentKey;
 
-      const res = await s3.send(new GetObjectCommand({ Bucket: BUCKET, Key: s3Key }));
-      const content = await res.Body.transformToString('utf-8');
+      // Block path traversal — key must be a safe relative .md path
+      if (agentKey.includes('..') || agentKey.startsWith('/') || !agentKey.endsWith('.md')) {
+        return json(400, { error: 'Invalid agent key' });
+      }
+
+      const content = await getS3Object('agents/' + agentKey);
       const { meta, body } = parseFrontmatter(content);
-      const description = meta.description || extractDescription(body);
-
-      return json(200, { content, meta, description });
+      return json(200, { content, meta, body });
     }
 
     return json(404, { error: 'Not found' });
