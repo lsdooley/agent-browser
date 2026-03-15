@@ -186,8 +186,8 @@ body {
 }
 .agent-card.active {
   background: #141424;
-  border-color: var(--agent-accent, #4f46e5);
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--agent-accent, #4f46e5) 20%, transparent);
+  border-color: var(--cat-accent, #4f46e5);
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--cat-accent, #4f46e5) 20%, transparent);
 }
 
 .agent-emoji {
@@ -488,6 +488,9 @@ body {
 /* Content area */
 .detail-content {
   padding: 16px 40px 60px;
+  font-size: 14px;
+  line-height: 1.75;
+  color: #4a5568;
 }
 
 /* Content card wraps the markdown */
@@ -528,12 +531,6 @@ body {
 /* ═══════════════════════════════════════════════════════════════════════════
    MARKDOWN CONTENT
 ═══════════════════════════════════════════════════════════════════════════ */
-.detail-content {
-  font-size: 14px;
-  line-height: 1.75;
-  color: #4a5568;
-}
-
 .content-card h1 {
   font-size: 22px; font-weight: 800; color: #1a202c;
   margin: 32px 0 12px; letter-spacing: -0.03em;

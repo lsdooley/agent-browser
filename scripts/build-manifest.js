@@ -7,6 +7,7 @@
 
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const { execSync } = require('child_process');
 
 const AGENTS_DIR = path.join(process.env.HOME, '.claude', 'agents');
@@ -24,7 +25,7 @@ function parseFrontmatter(content) {
 }
 
 function formatName(filename, category) {
-  let name = filename.replace('.md', '');
+  let name = filename.replace(/\.md$/i, '');
   if (name.startsWith(category + '-')) name = name.slice(category.length + 1);
   return name.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
 }
@@ -115,7 +116,7 @@ const manifest = {
   agents,
 };
 
-const tmpFile = '/tmp/agents-manifest.json';
+const tmpFile = path.join(os.tmpdir(), `agents-manifest-${process.pid}.json`);
 fs.writeFileSync(tmpFile, JSON.stringify(manifest));
 
 // Validate bucket name before shell interpolation (defensive check)

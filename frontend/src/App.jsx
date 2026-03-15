@@ -35,7 +35,9 @@ export default function App() {
     setAgentData(null);
     setLoadingAgent(true);
     try {
-      const res = await fetch(`/api/agents/${encodeURIComponent(agent.key)}`);
+      // Encode each path segment individually so slashes in the key are preserved
+      const encodedKey = agent.key.split('/').map(encodeURIComponent).join('/');
+      const res = await fetch(`/api/agents/${encodedKey}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const data = await res.json();
       setAgentData(data);

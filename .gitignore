@@ -15,6 +15,7 @@ frontend/dist/
 
 # Environment
 .env
+.env.local
 *.env.local
 
 # AWS credentials (never commit)

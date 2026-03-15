@@ -27,6 +27,7 @@ aws s3 sync ~/.claude/agents/ "s3://$BUCKET/agents/" \
   --delete \
   --exclude ".DS_Store" \
   --exclude "*/.DS_Store" \
+  --exclude ".git" \
   --exclude ".git/*"
 
 echo "Rebuilding agent manifest..."
