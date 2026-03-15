@@ -11,6 +11,12 @@ export default function App() {
   const [loadingAgent, setLoadingAgent] = useState(false);
   const [search, setSearch] = useState('');
   const [error, setError] = useState(null);
+  const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
+
+  useEffect(() => {
+    document.documentElement.classList.toggle('dark', dark);
+    localStorage.setItem('theme', dark ? 'dark' : 'light');
+  }, [dark]);
 
   useEffect(() => {
     fetch('/api/agents')
@@ -71,7 +77,7 @@ export default function App() {
         <div className="sidebar-header">
           <div className="brand">
             <span className="brand-logo">⚡</span>
-            <div>
+            <div className="brand-text">
               <div className="brand-name">Agent Browser</div>
               {manifest && (
                 <div className="brand-meta">
@@ -79,6 +85,13 @@ export default function App() {
                 </div>
               )}
             </div>
+            <button
+              className="dark-toggle"
+              onClick={() => setDark(d => !d)}
+              title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
+            >
+              {dark ? '☀️' : '🌙'}
+            </button>
           </div>
           <div className="search-wrap">
             <span className="search-icon">🔍</span>
@@ -103,7 +116,7 @@ export default function App() {
             <div className="sidebar-msg">No agents match "{search}"</div>
           )}
           {!loadingList && !error && (
-            <Sidebar categories={categories} selected={selected} onSelect={selectAgent} />
+            <Sidebar categories={categories} selected={selected} onSelect={selectAgent} search={search} />
           )}
         </div>
       </aside>

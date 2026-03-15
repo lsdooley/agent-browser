@@ -38,6 +38,21 @@ body {
   margin-bottom: 14px;
 }
 
+.brand-text { flex: 1; min-width: 0; }
+
+.dark-toggle {
+  background: #1a1a2e;
+  border: 1px solid #2d2d44;
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 14px;
+  cursor: pointer;
+  line-height: 1;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+}
+.dark-toggle:hover { background: #2d2d44; border-color: #45475a; }
+
 .brand-logo {
   width: 34px;
   height: 34px;
@@ -607,3 +622,90 @@ body {
 .content-card em { color: #718096; }
 .content-card a { color: #5a67d8; text-decoration: none; }
 .content-card a:hover { text-decoration: underline; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK MODE
+   Applied via .dark class on <html>
+═══════════════════════════════════════════════════════════════════════════ */
+
+/* Main content area */
+.dark .main { background: #0a0a12; }
+
+/* Welcome screen */
+.dark .welcome { background: #0a0a12; }
+.dark .welcome h1 { color: #e2e8f0; }
+.dark .welcome p { color: #718096; }
+.dark .welcome-stats { background: #13131f; border-color: #2d2d44; box-shadow: none; }
+.dark .w-num { color: #818cf8; }
+.dark .w-label { color: #4a5568; }
+.dark .w-divider { background: #2d2d44; }
+.dark .welcome-tip { background: #13131f; border-color: #2d2d44; color: #718096; box-shadow: none; }
+.dark .welcome-tip strong { color: #a0aec0; }
+.dark .tip-icon { opacity: 0.8; }
+
+/* Agent detail */
+.dark .detail { background: #0a0a12; }
+.dark .meta-row { background: #0a0a12; }
+
+.dark .meta-card {
+  background: #13131f;
+  border-color: #2d2d44;
+  box-shadow: none;
+}
+.dark .meta-card-label { color: #585b70; }
+.dark .meta-card-value { color: #e2e8f0; }
+.dark .meta-card-desc { color: #a0aec0; }
+
+.dark .how-to-card {
+  background: #13131f;
+  border-color: #2d2d44;
+  color: #a0aec0;
+  box-shadow: none;
+}
+.dark .how-to-card strong { color: #e2e8f0; }
+
+.dark .detail-description {
+  background: #13131f;
+  border-color: #2d2d44;
+  color: #a0aec0;
+}
+
+/* Content card (markdown) */
+.dark .content-card {
+  background: #13131f;
+  border-color: #2d2d44;
+  color: #a0aec0;
+  box-shadow: none;
+}
+
+.dark .content-card h1,
+.dark .content-card h2,
+.dark .content-card h3,
+.dark .content-card h4 { color: #e2e8f0; }
+
+.dark .content-card h1 { border-color: #2d2d44; }
+.dark .content-card h2 { border-color: #2d2d44; }
+
+.dark .content-card strong { color: #e2e8f0; }
+.dark .content-card em { color: #718096; }
+.dark .content-card a { color: #818cf8; }
+
+.dark .content-card code {
+  background: #1e1e30;
+  color: #a78bfa;
+}
+
+.dark .content-card blockquote {
+  background: #0f1a2e;
+  border-color: #2d4a6b;
+  color: #718096;
+}
+
+.dark .content-card table { border-color: #2d2d44; }
+.dark .content-card th { background: #0d0d1a; color: #a0aec0; }
+.dark .content-card td { border-color: #2d2d44; }
+.dark .content-card tr:hover td { background: #0d0d1a; }
+.dark .content-card hr { border-color: #2d2d44; }
+
+/* Loading state */
+.dark .loading-state { color: #4a5568; }

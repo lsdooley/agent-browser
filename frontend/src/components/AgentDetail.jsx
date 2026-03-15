@@ -1,7 +1,17 @@
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import remarkEmoji from 'remark-emoji';
 import { getCategoryColor, formatCategory, formatName, timeAgo, formatDate, formatSize } from '../utils.js';
+
+// Convert Python-style unicode escapes that are stored as literal text in some agent files.
+// e.g. \U0001F5FA\uFE0F → 🗺️
+function preprocessMarkdown(text) {
+  if (!text) return text;
+  text = text.replace(/\\U([0-9A-Fa-f]{8})/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)));
+  text = text.replace(/\\u([0-9A-Fa-f]{4})/g, (_, hex) => String.fromCodePoint(parseInt(hex, 16)));
+  return text;
+}
 
 export default function AgentDetail({ agent, data, loading }) {
   const [copied, setCopied] = useState(false);
@@ -117,8 +127,8 @@ export default function AgentDetail({ agent, data, loading }) {
         {/* Use data.body — frontmatter is already stripped */}
         {!loading && data?.body && (
           <div className="content-card">
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {data.body}
+            <ReactMarkdown remarkPlugins={[remarkGfm, remarkEmoji]}>
+              {preprocessMarkdown(data.body)}
             </ReactMarkdown>
           </div>
         )}

@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { formatName, formatCategory, getCategoryColor, timeAgo, CATEGORY_ICONS } from '../utils.js';
 
-export default function Sidebar({ categories, selected, onSelect }) {
-  // All collapsed by default
+export default function Sidebar({ categories, selected, onSelect, search }) {
+  // All collapsed by default; user can toggle
   const [open, setOpen] = useState({});
   const toggle = (cat) => setOpen(prev => ({ ...prev, [cat]: !prev[cat] }));
 
@@ -12,7 +12,8 @@ export default function Sidebar({ categories, selected, onSelect }) {
         .sort(([a], [b]) => a.localeCompare(b))
         .map(([cat, agents]) => {
           const color = getCategoryColor(cat);
-          const isOpen = !!open[cat];
+          // Auto-expand every matching category while searching
+          const isOpen = search ? true : !!open[cat];
           return (
             <div key={cat} className="cat-group">
               <button
