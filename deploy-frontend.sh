@@ -29,6 +29,11 @@ if [ -z "$BUCKET" ]; then
   exit 1
 fi
 
+if [ -z "$DISTRIBUTION_ID" ]; then
+  echo "ERROR: Could not find DistributionId in stack '$STACK_NAME' outputs."
+  exit 1
+fi
+
 echo "Building frontend..."
 cd frontend
 npm run build

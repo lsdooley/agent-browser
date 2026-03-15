@@ -27,17 +27,18 @@ export default function AgentDetail({ agent, data, loading }) {
       success = true;
     } catch {
       // Fallback for browsers without Clipboard API
+      const el = document.createElement('textarea');
       try {
-        const el = document.createElement('textarea');
         el.value = data.content;
         el.style.position = 'fixed';
         el.style.opacity = '0';
         document.body.appendChild(el);
         el.select();
         success = document.execCommand('copy');
-        document.body.removeChild(el);
       } catch {
         success = false;
+      } finally {
+        if (el.parentNode) document.body.removeChild(el);
       }
     }
     if (success) {

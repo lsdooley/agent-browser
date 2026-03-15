@@ -21,7 +21,14 @@ if [ -z "$BUCKET" ]; then
   exit 1
 fi
 
-echo "Syncing ~/.claude/agents/ → s3://$BUCKET/agents/"
+AGENT_COUNT=$(find ~/.claude/agents/ -name "*.md" 2>/dev/null | wc -l | tr -d ' ')
+if [ "$AGENT_COUNT" -eq 0 ]; then
+  echo "ERROR: No .md files found in ~/.claude/agents/ — aborting to avoid wiping S3."
+  echo "Are you on the right machine? Expected agents at: ~/.claude/agents/"
+  exit 1
+fi
+
+echo "Syncing $AGENT_COUNT agents → s3://$BUCKET/agents/"
 
 aws s3 sync ~/.claude/agents/ "s3://$BUCKET/agents/" \
   --delete \

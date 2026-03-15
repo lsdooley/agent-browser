@@ -16,10 +16,6 @@ export const DEFAULT_COLOR = {
   text: '#fff',
 };
 
-export function getColor(color) {
-  return COLOR_MAP[color?.toLowerCase()] || DEFAULT_COLOR;
-}
-
 // Per-category colors — used for headers and accents
 export const CATEGORY_COLORS = {
   engineering:          'blue',
@@ -57,11 +53,11 @@ export function timeAgo(dateStr) {
   if (diff < 60) return 'just now';
   if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
   if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+  if (diff < 0) return 'just now';
   const days = Math.floor(diff / 86400);
   if (days < 30) return `${days}d ago`;
-  const months = Math.floor(days / 30);
-  if (months < 12) return `${months}mo ago`;
-  return `${Math.floor(months / 12)}y ago`;
+  if (days >= 365) return `${Math.floor(days / 365)}y ago`;
+  return `${Math.floor(days / 30)}mo ago`;
 }
 
 export function formatDate(dateStr) {
@@ -70,7 +66,7 @@ export function formatDate(dateStr) {
 }
 
 export function formatSize(bytes) {
-  if (!bytes) return null;
+  if (bytes == null) return null;
   if (bytes < 1024) return `${bytes} B`;
   return `${(bytes / 1024).toFixed(1)} KB`;
 }

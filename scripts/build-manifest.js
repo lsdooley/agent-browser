@@ -135,6 +135,6 @@ if (!/^[a-z0-9][a-z0-9\-]{1,61}[a-z0-9]$/.test(bucket)) {
   process.exit(1);
 }
 
-execSync(`aws s3 cp ${tmpFile} s3://${bucket}/agents-manifest.json --content-type "application/json" --cache-control "no-cache"`);
+execSync(`aws s3 cp "${tmpFile}" "s3://${bucket}/agents-manifest.json" --content-type "application/json" --cache-control "no-cache"`);
 
 console.log(`✓ Manifest built: ${agents.length} agents across ${[...new Set(agents.map(a => a.category))].length} categories`);

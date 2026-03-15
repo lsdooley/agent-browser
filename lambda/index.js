@@ -2,6 +2,7 @@ const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 
 const s3 = new S3Client({});
 const BUCKET = process.env.BUCKET_NAME;
+if (!BUCKET) throw new Error('BUCKET_NAME environment variable is not set');
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
@@ -62,7 +63,9 @@ exports.handler = async (event) => {
       const agentKey = decodeURIComponent(path.slice('/api/agents/'.length));
 
       // Block path traversal — key must be a safe relative .md path
-      if (agentKey.includes('..') || agentKey.startsWith('/') || !agentKey.endsWith('.md')) {
+      const segments = agentKey.split('/');
+      const hasTraversal = agentKey.startsWith('/') || segments.some(s => s === '..' || s === '.');
+      if (hasTraversal || !agentKey.endsWith('.md')) {
         return json(400, { error: 'Invalid agent key' });
       }
 
