@@ -13,13 +13,23 @@ const { execSync } = require('child_process');
 const AGENTS_DIR = path.join(process.env.HOME, '.claude', 'agents');
 const STACK_NAME = 'agent-browser';
 
+function decodeYamlValue(val) {
+  // Strip surrounding single or double quotes (YAML quoted strings)
+  val = val.replace(/^["']|["']$/g, '');
+  // Decode \UXXXXXXXX (8-digit, Python-style, e.g. "\U0001F5FA")
+  val = val.replace(/\\U([0-9A-Fa-f]{8})/g, (_, h) => String.fromCodePoint(parseInt(h, 16)));
+  // Decode \uXXXX (4-digit, e.g. "\uFE0F")
+  val = val.replace(/\\u([0-9A-Fa-f]{4})/g, (_, h) => String.fromCodePoint(parseInt(h, 16)));
+  return val;
+}
+
 function parseFrontmatter(content) {
   const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---/);
   if (!match) return {};
   const meta = {};
   for (const line of match[1].split('\n')) {
     const idx = line.indexOf(':');
-    if (idx > 0) meta[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+    if (idx > 0) meta[line.slice(0, idx).trim()] = decodeYamlValue(line.slice(idx + 1).trim());
   }
   return meta;
 }
