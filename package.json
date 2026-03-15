@@ -1,0 +1,12 @@
+{
+  "name": "agent-browser",
+  "version": "1.0.0",
+  "description": "Browse and copy Claude Code agents from anywhere",
+  "scripts": {
+    "install:all": "cd frontend && npm install && cd ../lambda && npm install",
+    "deploy:backend": "sam build && sam deploy --guided",
+    "deploy:frontend": "bash deploy-frontend.sh",
+    "sync": "bash sync-agents.sh",
+    "deploy": "npm run deploy:backend && npm run deploy:frontend && npm run sync"
+  }
+}

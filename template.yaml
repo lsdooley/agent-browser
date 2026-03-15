@@ -1,0 +1,144 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: Agent Browser - View and copy Claude Code agents from anywhere
+
+Globals:
+  Function:
+    Runtime: nodejs20.x
+    Timeout: 30
+    MemorySize: 256
+
+Resources:
+
+  # ── S3 Bucket (agents + frontend) ──────────────────────────────────────────
+  AppBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub 'agent-browser-${AWS::AccountId}'
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  AppBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref AppBucket
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub '${AppBucket.Arn}/*'
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub 'arn:aws:cloudfront::${AWS::AccountId}:distribution/${AppDistribution}'
+
+  # ── Lambda API ──────────────────────────────────────────────────────────────
+  AgentFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: agent-browser-api
+      CodeUri: lambda/
+      Handler: index.handler
+      Environment:
+        Variables:
+          BUCKET_NAME: !Ref AppBucket
+      Policies:
+        - S3ReadPolicy:
+            BucketName: !Ref AppBucket
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            Path: /api/{proxy+}
+            Method: ANY
+            ApiId: !Ref AppApi
+
+  # ── HTTP API Gateway ────────────────────────────────────────────────────────
+  AppApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: $default
+      CorsConfiguration:
+        AllowOrigins:
+          - '*'
+        AllowMethods:
+          - GET
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+
+  # ── CloudFront Origin Access Control ───────────────────────────────────────
+  AppOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub 'agent-browser-oac-${AWS::AccountId}'
+        Description: OAC for Agent Browser S3 bucket
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+  # ── CloudFront Distribution ─────────────────────────────────────────────────
+  AppDistribution:
+    Type: AWS::CloudFront::Distribution
+    DependsOn: AppBucketPolicy
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        Comment: Agent Browser
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt AppBucket.RegionalDomainName
+            OriginAccessControlId: !GetAtt AppOAC.Id
+            S3OriginConfig:
+              OriginAccessIdentity: ''
+          - Id: ApiOrigin
+            DomainName: !Sub '${AppApi}.execute-api.${AWS::Region}.amazonaws.com'
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+
+        # Default: serve frontend from S3
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          CachePolicyId: 658327ea-f89d-4fab-a63d-7e88639e58f6  # CachingOptimized
+          AllowedMethods: [GET, HEAD, OPTIONS]
+
+        # /api/* → Lambda via API Gateway (no caching)
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: ApiOrigin
+            ViewerProtocolPolicy: https-only
+            CachePolicyId: 4135ea2d-6df8-44a3-9df3-4b5a84be39ad  # CachingDisabled
+            OriginRequestPolicyId: b689b0a8-53d0-40ab-baf2-68738e2966ac  # AllViewerExceptHostHeader
+            AllowedMethods: [GET, HEAD, OPTIONS]
+
+        # SPA routing: return index.html for 403/404
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+Outputs:
+  AppUrl:
+    Description: Application URL (CloudFront)
+    Value: !Sub 'https://${AppDistribution.DomainName}'
+  BucketName:
+    Description: S3 bucket name
+    Value: !Ref AppBucket
+  DistributionId:
+    Description: CloudFront distribution ID (for cache invalidation)
+    Value: !Ref AppDistribution
+  ApiUrl:
+    Description: API Gateway URL
+    Value: !Sub 'https://${AppApi}.execute-api.${AWS::Region}.amazonaws.com'

@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+frontend/node_modules/
+lambda/node_modules/
+
+# Build output
+frontend/dist/
+.aws-sam/
+
+# SAM deploy config (generated after first deploy - safe to commit if desired)
+# samconfig.toml
+
+# macOS
+.DS_Store
+
+# Environment
+.env
+*.env.local
+
+# AWS credentials (never commit)
+*.pem
+credentials

@@ -1,0 +1,9 @@
+{
+  "name": "agent-browser-lambda",
+  "version": "1.0.0",
+  "description": "Agent Browser API Lambda",
+  "main": "index.js",
+  "dependencies": {
+    "@aws-sdk/client-s3": "^3.600.0"
+  }
+}
