@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar.jsx';
 import AgentDetail from './components/AgentDetail.jsx';
+import RobotIcon from './components/RobotIcon.jsx';
 import './App.css';
 
 export default function App() {
@@ -76,7 +77,7 @@ export default function App() {
       <aside className="sidebar">
         <div className="sidebar-header">
           <div className="brand">
-            <span className="brand-logo">⚡</span>
+            <span className="brand-logo"><RobotIcon size={22}/></span>
             <div className="brand-text">
               <div className="brand-name">Agent Browser</div>
               {manifest && (
@@ -137,7 +138,7 @@ function Welcome({ agents, categories, manifest }) {
   return (
     <div className="welcome">
       <div className="welcome-hero">
-        <div className="welcome-glyph">⚡</div>
+        <div className="welcome-glyph"><RobotIcon size={40}/></div>
         <h1>Agent Browser</h1>
         <p>Your complete Claude Code specialist roster. Browse agents, explore their capabilities, and copy their prompts to use anywhere.</p>
       </div>

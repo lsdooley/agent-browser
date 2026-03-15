@@ -1,0 +1,35 @@
+<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Antenna stem -->
+  <rect x="22" y="3" width="4" height="7" rx="2" fill="#818cf8"/>
+  <!-- Antenna ball -->
+  <circle cx="24" cy="3" r="3" fill="#a78bfa"/>
+
+  <!-- Head — boxy with rounded corners, gradient feel via two rects -->
+  <rect x="5" y="10" width="38" height="30" rx="7" fill="#4f46e5"/>
+  <rect x="5" y="10" width="38" height="15" rx="7" fill="#6366f1" opacity="0.5"/>
+
+  <!-- Left eye housing (binocular style) -->
+  <rect x="9"  y="15" width="13" height="13" rx="4" fill="#1e1b4b"/>
+  <!-- Right eye housing -->
+  <rect x="26" y="15" width="13" height="13" rx="4" fill="#1e1b4b"/>
+
+  <!-- Left eye glow -->
+  <circle cx="15.5" cy="21.5" r="4.5" fill="#06b6d4"/>
+  <!-- Right eye glow -->
+  <circle cx="32.5" cy="21.5" r="4.5" fill="#06b6d4"/>
+
+  <!-- Left eye highlight -->
+  <circle cx="17"   cy="19.5" r="1.8" fill="white" opacity="0.85"/>
+  <!-- Right eye highlight -->
+  <circle cx="34"   cy="19.5" r="1.8" fill="white" opacity="0.85"/>
+
+  <!-- Smile -->
+  <path d="M15 34 Q24 40 33 34"
+        stroke="#a5b4fc" stroke-width="2.2"
+        fill="none" stroke-linecap="round"/>
+
+  <!-- Chest indicator lights -->
+  <circle cx="20" cy="36" r="1.2" fill="#34d399"/>
+  <circle cx="24" cy="36" r="1.2" fill="#fbbf24"/>
+  <circle cx="28" cy="36" r="1.2" fill="#f87171"/>
+</svg>
