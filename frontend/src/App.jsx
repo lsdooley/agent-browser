@@ -13,6 +13,7 @@ export default function App() {
   const [search, setSearch] = useState('');
   const [error, setError] = useState(null);
   const [dark, setDark] = useState(() => localStorage.getItem('theme') === 'dark');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', dark);
@@ -37,12 +38,12 @@ export default function App() {
   }, []);
 
   const selectAgent = async (agent) => {
-    if (selected?.key === agent.key) return;
+    if (selected?.key === agent.key) { setSidebarOpen(false); return; }
     setSelected(agent);
     setAgentData(null);
     setLoadingAgent(true);
+    setSidebarOpen(false); // auto-close on mobile after selection
     try {
-      // Encode each path segment individually so slashes in the key are preserved
       const encodedKey = agent.key.split('/').map(encodeURIComponent).join('/');
       const res = await fetch(`/api/agents/${encodedKey}`);
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
@@ -74,7 +75,28 @@ export default function App() {
 
   return (
     <div className="app">
-      <aside className="sidebar">
+
+      {/* Mobile top bar */}
+      <div className="mobile-bar">
+        <button className="hamburger" onClick={() => setSidebarOpen(true)} aria-label="Open menu">
+          <span/><span/><span/>
+        </button>
+        <div className="mobile-title">
+          <RobotIcon size={20}/>
+          Agent Browser
+        </div>
+        <button className="dark-toggle" onClick={() => setDark(d => !d)}
+          title={dark ? 'Light mode' : 'Dark mode'}>
+          {dark ? '☀️' : '🌙'}
+        </button>
+      </div>
+
+      {/* Backdrop for mobile sidebar */}
+      {sidebarOpen && (
+        <div className="sidebar-backdrop" onClick={() => setSidebarOpen(false)} />
+      )}
+
+      <aside className={`sidebar ${sidebarOpen ? 'sidebar-open' : ''}`}>
         <div className="sidebar-header">
           <div className="brand">
             <span className="brand-logo"><RobotIcon size={22}/></span>
@@ -86,11 +108,8 @@ export default function App() {
                 </div>
               )}
             </div>
-            <button
-              className="dark-toggle"
-              onClick={() => setDark(d => !d)}
-              title={dark ? 'Switch to light mode' : 'Switch to dark mode'}
-            >
+            <button className="dark-toggle" onClick={() => setDark(d => !d)}
+              title={dark ? 'Light mode' : 'Dark mode'}>
               {dark ? '☀️' : '🌙'}
             </button>
           </div>
@@ -142,6 +161,7 @@ function Welcome({ agents, categories, manifest }) {
         <h1>Agent Browser</h1>
         <p>Your complete Claude Code specialist roster. Browse agents, explore their capabilities, and copy their prompts to use anywhere.</p>
       </div>
+
       <div className="welcome-stats">
         <div className="w-stat">
           <span className="w-num">{agents.length}</span>
@@ -164,11 +184,76 @@ function Welcome({ agents, categories, manifest }) {
           </>
         )}
       </div>
+
       <div className="welcome-tip">
         <span className="tip-icon">💡</span>
         <span>
-          Select any agent to view its full prompt. Use <strong>Copy to Clipboard</strong> to paste it into Claude.ai, Cursor, or any other AI tool.
+          Select any agent to view its full prompt. Use <strong>Copy Prompt</strong> to paste into Claude.ai, Cursor, or any AI tool.
         </span>
+      </div>
+
+      <SyncCard />
+    </div>
+  );
+}
+
+function SyncCard() {
+  const [copied, setCopied] = useState(null);
+
+  const copy = (text, key) => {
+    navigator.clipboard.writeText(text).then(() => {
+      setCopied(key);
+      setTimeout(() => setCopied(null), 2000);
+    });
+  };
+
+  const commands = [
+    {
+      key: 'sync',
+      label: 'Sync agents from your Mac',
+      description: 'Run this whenever you install, remove, or update agents locally.',
+      cmd: 'cd ~/projects/agent-browser && npm run sync',
+    },
+    {
+      key: 'deploy',
+      label: 'Deploy UI changes',
+      description: 'Run this after making any changes to the app code.',
+      cmd: 'cd ~/projects/agent-browser && npm run deploy:frontend',
+    },
+  ];
+
+  return (
+    <div className="sync-card">
+      <div className="sync-card-header">
+        <span className="sync-card-icon">📡</span>
+        <div>
+          <div className="sync-card-title">Keeping Agents Up to Date</div>
+          <div className="sync-card-subtitle">Run these commands from your Mac terminal</div>
+        </div>
+      </div>
+
+      <div className="sync-commands">
+        {commands.map(({ key, label, description, cmd }) => (
+          <div key={key} className="sync-command">
+            <div className="sync-command-meta">
+              <div className="sync-command-label">{label}</div>
+              <div className="sync-command-desc">{description}</div>
+            </div>
+            <div className="sync-command-row">
+              <code className="sync-code">{cmd}</code>
+              <button
+                className={`sync-copy ${copied === key ? 'copied' : ''}`}
+                onClick={() => copy(cmd, key)}
+              >
+                {copied === key ? '✓' : 'Copy'}
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <div className="sync-card-footer">
+        After syncing, refresh the page to see your updated agent list.
       </div>
     </div>
   );

@@ -262,12 +262,13 @@ body {
   align-items: center;
   justify-content: center;
   min-height: 100%;
-  padding: 60px 40px;
+  padding: 48px 40px 60px;
   text-align: center;
   background: #f8fafc;
+  gap: 24px;
 }
 
-.welcome-hero { margin-bottom: 40px; }
+.welcome-hero { }
 
 .welcome-glyph {
   width: 80px;
@@ -305,7 +306,6 @@ body {
   border: 1px solid #e2e8f0;
   border-radius: 16px;
   padding: 24px 40px;
-  margin-bottom: 28px;
   box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
 
@@ -349,7 +349,8 @@ body {
   padding: 14px 18px;
   font-size: 13px;
   color: #718096;
-  max-width: 480px;
+  width: 100%;
+  max-width: 560px;
   text-align: left;
   line-height: 1.55;
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
@@ -708,3 +709,275 @@ body {
 
 /* Loading state */
 .dark .loading-state { color: #4a5568; }
+
+/* Sync card dark mode */
+.dark .sync-card { background: #13131f; border-color: #2d2d44; }
+.dark .sync-card-title { color: #e2e8f0; }
+.dark .sync-card-subtitle { color: #4a5568; }
+.dark .sync-command { border-color: #2d2d44; }
+.dark .sync-command-label { color: #e2e8f0; }
+.dark .sync-command-desc { color: #4a5568; }
+.dark .sync-command-row { background: #0a0a12; border-color: #2d2d44; }
+.dark .sync-code { color: #a78bfa; }
+.dark .sync-card-footer { color: #4a5568; border-color: #2d2d44; }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   SYNC / INSTRUCTIONS CARD
+═══════════════════════════════════════════════════════════════════════════ */
+.sync-card {
+  width: 100%;
+  max-width: 560px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+}
+
+.sync-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 20px 14px;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.sync-card-icon { font-size: 22px; flex-shrink: 0; }
+
+.sync-card-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 2px;
+}
+
+.sync-card-subtitle {
+  font-size: 12px;
+  color: #a0aec0;
+}
+
+.sync-commands { padding: 4px 0; }
+
+.sync-command {
+  padding: 14px 20px;
+  border-bottom: 1px solid #f7fafc;
+}
+.sync-command:last-child { border-bottom: none; }
+
+.sync-command-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #2d3748;
+  margin-bottom: 3px;
+}
+
+.sync-command-desc {
+  font-size: 12px;
+  color: #a0aec0;
+  margin-bottom: 10px;
+}
+
+.sync-command-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+.sync-code {
+  flex: 1;
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  color: #4f46e5;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sync-copy {
+  flex-shrink: 0;
+  background: #4f46e5;
+  color: #fff;
+  border: none;
+  border-radius: 5px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.sync-copy:hover { background: #4338ca; }
+.sync-copy.copied { background: #16a34a; }
+
+.sync-card-footer {
+  padding: 10px 20px;
+  font-size: 11px;
+  color: #a0aec0;
+  border-top: 1px solid #f7fafc;
+  text-align: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   MOBILE TOP BAR
+═══════════════════════════════════════════════════════════════════════════ */
+.mobile-bar {
+  display: none; /* hidden on desktop */
+}
+
+.hamburger {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: 6px;
+}
+.hamburger span {
+  display: block;
+  width: 20px;
+  height: 2px;
+  background: #e2e8f0;
+  border-radius: 2px;
+  transition: background 0.15s;
+}
+.hamburger:hover span { background: #fff; }
+
+.mobile-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  color: #e2e8f0;
+  flex: 1;
+}
+
+/* Backdrop overlay when sidebar is open on mobile */
+.sidebar-backdrop {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 40;
+  backdrop-filter: blur(2px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET  (641px – 1024px)
+═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .sidebar { width: 260px; min-width: 260px; }
+  .hero-inner { padding: 24px 28px; }
+  .hero-name { font-size: 24px; }
+  .hero-emoji { font-size: 44px; }
+  .meta-row { padding: 16px 28px; }
+  .detail-content { padding: 14px 28px 48px; }
+  .how-to-card { margin: 0 28px 4px; }
+  .detail-description { margin: 16px 28px 0; }
+  .welcome { padding: 40px 24px; }
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE — PHONE  (≤ 640px)
+═══════════════════════════════════════════════════════════════════════════ */
+@media (max-width: 640px) {
+
+  /* Show mobile bar, hide desktop sidebar header brand */
+  .mobile-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 16px;
+    height: 52px;
+    background: #0d0d14;
+    border-bottom: 1px solid #1e1e2e;
+    flex-shrink: 0;
+    z-index: 30;
+    position: sticky;
+    top: 0;
+  }
+
+  .sidebar-backdrop { display: block; }
+
+  /* Sidebar slides in from left as overlay */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 50;
+    transform: translateX(-100%);
+    transition: transform 0.25s ease;
+    width: 285px;
+    min-width: 285px;
+    box-shadow: 4px 0 24px rgba(0,0,0,0.4);
+  }
+  .sidebar.sidebar-open { transform: translateX(0); }
+
+  /* App layout stacks vertically on mobile */
+  .app {
+    flex-direction: column;
+    height: 100dvh;
+  }
+
+  .main {
+    flex: 1;
+    overflow-y: auto;
+  }
+
+  /* Welcome */
+  .welcome { padding: 28px 20px 40px; gap: 20px; }
+  .welcome h1 { font-size: 22px; }
+  .welcome p { font-size: 14px; }
+  .welcome-glyph { width: 64px; height: 64px; }
+  .welcome-stats { padding: 16px 20px; flex-wrap: wrap; justify-content: center; gap: 0; }
+  .w-stat { padding: 0 16px; }
+  .w-num { font-size: 28px; }
+  .w-divider { height: 30px; }
+
+  /* Sync card */
+  .sync-card { max-width: 100%; }
+  .sync-code { font-size: 11px; }
+
+  /* Hero banner */
+  .hero-inner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 20px 20px 18px;
+  }
+  .hero-emoji { font-size: 40px; }
+  .hero-name { font-size: 22px; }
+  .hero-vibe { font-size: 13px; }
+  .copy-btn { width: 100%; justify-content: center; padding: 12px; }
+
+  /* Meta row */
+  .meta-row {
+    padding: 14px 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+  .meta-card-wide { grid-column: 1 / -1; }
+
+  /* How to / content */
+  .how-to-card { margin: 0 20px 4px; font-size: 12px; }
+  .detail-content { padding: 12px 20px 40px; }
+  .detail-description { margin: 14px 20px 0; }
+  .content-card { padding: 20px; }
+
+  /* Markdown */
+  .content-card h1 { font-size: 18px; }
+  .content-card h2 { font-size: 15px; }
+  .content-card pre { padding: 14px; }
+  .content-card pre code { font-size: 11px; }
+
+  /* Hide desktop dark toggle (it's in mobile bar) */
+  .sidebar-header .dark-toggle { display: none; }
+}
